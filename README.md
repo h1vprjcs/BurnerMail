@@ -1,4 +1,6 @@
 # BurnerMail
+![burnermailpicture cropped](https://github.com/user-attachments/assets/62808c84-dfda-4c05-b11e-c99252c84f82)
+
 
 A macOS menu bar app that generates iCloud Hide My Email addresses with strong passwords in one click.
 
