@@ -1,0 +1,14 @@
+# Xcode build artifacts
+build/
+DerivedData/
+*.xcarchive
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+
+# macOS
+.DS_Store
+*.swp
+
+# Distribution output
+dist/
