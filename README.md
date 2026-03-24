@@ -67,3 +67,16 @@ Passwords are generated using `SecRandomCopyBytes` (cryptographically secure) an
 - Your Apple ID password is never seen or stored by BurnerMail
 - Sign-in happens entirely in a standard WebKit browser view
 - No analytics, no telemetry, no servers — the app talks only to Apple's iCloud API
+
+Photos and community server.
+https://discord.gg/g4ccFUEcnU
+
+<img width="364" height="250" alt="Screenshot 2026-03-23 at 11 59 49 PM" src="https://github.com/user-attachments/assets/f31bf2c3-cc9b-450f-bae1-f09539da1ac8" />
+
+<img width="336" height="333" alt="Screenshot 2026-03-24 at 12 00 08 AM" src="https://github.com/user-attachments/assets/63326174-f0b1-427e-b946-ca32cd73a8f0" />
+
+<img width="358" height="301" alt="Screenshot 2026-03-24 at 12 01 28 AM" src="https://github.com/user-attachments/assets/26fc2ec6-2df2-4d95-9023-7024fb8d08f0" />
+
+
+
+
