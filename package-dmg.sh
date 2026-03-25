@@ -1,11 +1,21 @@
 #!/bin/bash
 # Builds BurnerMail (Release) and packages it as a distributable DMG.
+# Optionally notarizes and staples the DMG so macOS Gatekeeper lets users open it.
 #
 # Usage:
-#   ./package-dmg.sh                         # uses automatic signing from Xcode
-#   ./package-dmg.sh --team YOUR_TEAM_ID     # pass your Apple Developer Team ID
+#   ./package-dmg.sh                                     # build + package only (unsigned/unnotarized)
+#   ./package-dmg.sh --team YOUR_TEAM_ID                 # specify Team ID for signing
+#   ./package-dmg.sh --notarize \
+#     --team YOUR_TEAM_ID \
+#     --apple-id you@example.com \
+#     --password xxxx-xxxx-xxxx-xxxx                     # sign + notarize + staple
 #
-# Run from the folder containing BurnerMail.xcodeproj
+# NOTE: macOS 15 (Sequoia) and later enforce Gatekeeper for ALL apps downloaded
+# from the internet. Without notarization users see:
+#   "BurnerMail.app can't be opened."  (no "Open Anyway" option)
+# Always notarize before releasing a public build.
+#
+# Run from the folder containing BurnerMail.xcodeproj.
 
 set -e
 
@@ -16,15 +26,38 @@ PROJECT="BurnerMail.xcodeproj"
 SCHEME="BurnerMail"
 BUILD_DIR="build"
 DIST_DIR="dist"
-TEAM_ID=""
 
-# Parse optional --team argument
+TEAM_ID=""
+APPLE_ID=""
+APP_PASSWORD=""
+NOTARIZE=false
+
+# Parse arguments
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    --team) TEAM_ID="$2"; shift ;;
+    --team)     TEAM_ID="$2";       shift ;;
+    --apple-id) APPLE_ID="$2";      shift ;;
+    --password) APP_PASSWORD="$2";  shift ;;
+    --notarize) NOTARIZE=true       ;;
+    *) echo "Unknown argument: $1"; exit 1 ;;
   esac
   shift
 done
+
+# Validate notarization args
+if $NOTARIZE; then
+  if [ -z "$TEAM_ID" ] || [ -z "$APPLE_ID" ] || [ -z "$APP_PASSWORD" ]; then
+    echo "ERROR: --notarize requires --team, --apple-id, and --password."
+    echo "  Example:"
+    echo "    ./package-dmg.sh --notarize \\"
+    echo "      --team ABCDE12345 \\"
+    echo "      --apple-id you@example.com \\"
+    echo "      --password xxxx-xxxx-xxxx-xxxx"
+    echo ""
+    echo "  Generate an app-specific password at: https://appleid.apple.com"
+    exit 1
+  fi
+fi
 
 # Build extra args for xcodebuild if team ID supplied
 TEAM_ARGS=""
@@ -78,6 +111,39 @@ echo ""
 echo "=========================================="
 echo "  DMG ready: ${DIST_DIR}/${DMG_NAME}.dmg"
 echo "=========================================="
+
+# ── Notarization ────────────────────────────────────────────────────────────
+if $NOTARIZE; then
+  echo ""
+  echo ">>> Submitting to Apple Notary Service (this may take a few minutes)..."
+  xcrun notarytool submit "$DMG_FINAL" \
+    --apple-id "$APPLE_ID" \
+    --team-id "$TEAM_ID" \
+    --password "$APP_PASSWORD" \
+    --wait
+
+  echo ">>> Stapling notarization ticket to DMG..."
+  xcrun stapler staple "$DMG_FINAL"
+
+  echo ""
+  echo "=========================================="
+  echo "  Notarized DMG: ${DIST_DIR}/${DMG_NAME}.dmg"
+  echo "  Users can now open the app without any Gatekeeper warning."
+  echo "=========================================="
+else
+  echo ""
+  echo "WARNING: This DMG is NOT notarized."
+  echo "  macOS 15 (Sequoia) and later will block users from opening the app"
+  echo "  with no option to override. Always notarize public releases:"
+  echo ""
+  echo "    ./package-dmg.sh --notarize \\"
+  echo "      --team YOUR_TEAM_ID \\"
+  echo "      --apple-id you@example.com \\"
+  echo "      --password YOUR_APP_SPECIFIC_PASSWORD"
+  echo ""
+  echo "  Generate an app-specific password at: https://appleid.apple.com"
+fi
+
 echo ""
 echo "To release on GitHub:"
 echo "  1. Go to your repo > Releases > Draft a new release"
@@ -85,13 +151,3 @@ echo "  2. Tag: v${VERSION}"
 echo "  3. Attach: ${DIST_DIR}/${DMG_NAME}.dmg"
 echo "  4. Publish"
 echo ""
-echo "NOTE: First-time users may see a Gatekeeper warning."
-echo "      Tell them: right-click the app > Open (only needed once)."
-echo ""
-echo "To remove the warning entirely, notarize with:"
-echo "  xcrun notarytool submit ${DIST_DIR}/${DMG_NAME}.dmg \\"
-echo "    --apple-id YOUR_APPLE_ID \\"
-echo "    --team-id YOUR_TEAM_ID \\"
-echo "    --password YOUR_APP_SPECIFIC_PASSWORD \\"
-echo "    --wait"
-echo "  xcrun stapler staple ${DIST_DIR}/${DMG_NAME}.dmg"
