@@ -74,9 +74,9 @@ DMG_FINAL="${DIST_DIR}/${DMG_NAME}.dmg"
 rm -f "$DMG_TEMP" "$DMG_FINAL"
 
 # Create writable DMG, copy app + Applications shortcut
+MOUNT_POINT="/Volumes/${APP_NAME}"
 hdiutil create -size 80m -fs HFS+ -volname "$APP_NAME" "$DMG_TEMP" -quiet
-# Attach without -quiet so the mount path is printed, then extract it reliably
-MOUNT_POINT=$(hdiutil attach "$DMG_TEMP" -noverify -noautoopen | grep -E '^/dev/' | tail -1 | awk '{print $NF}')
+hdiutil attach "$DMG_TEMP" -quiet -mountpoint "$MOUNT_POINT"
 echo ">>> Mounted at: $MOUNT_POINT"
 cp -R "$APP_PATH" "$MOUNT_POINT/"
 ln -s /Applications "$MOUNT_POINT/Applications"
