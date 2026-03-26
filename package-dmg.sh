@@ -56,6 +56,16 @@ if [ -z "$APP_PATH" ]; then
 fi
 
 echo ">>> App built at: $APP_PATH"
+
+# Strip quarantine attributes and apply ad-hoc signature.
+# Without this, unsigned apps on macOS 13+ show a hard block with no
+# "Open Anyway" button. Ad-hoc signing (-) requires no Apple Developer account
+# but gives Gatekeeper enough info to surface the bypass option.
+echo ">>> Applying ad-hoc signature..."
+xattr -cr "$APP_PATH"
+codesign --force --deep --sign - "$APP_PATH"
+echo ">>> Ad-hoc signature applied."
+
 echo ">>> Packaging as DMG..."
 
 mkdir -p "$DIST_DIR"
