@@ -12,6 +12,7 @@ struct ContentView: View {
     @State private var generatedPassword: String?
     @State private var errorMessage: String?
     @State private var showingAuth = false
+    @State private var showingSettings = false
     @State private var copiedEmail = false
     @State private var copiedPassword = false
     @State private var showPassword = false
@@ -28,7 +29,9 @@ struct ContentView: View {
             Divider()
 
             Group {
-                if showingAuth {
+                if showingSettings {
+                    SettingsView(isPresented: $showingSettings)
+                } else if showingAuth {
                     AuthSheet(isPresented: $showingAuth)
                         .environmentObject(iCloudService)
                 } else if !iCloudService.isAuthenticated {
@@ -41,6 +44,7 @@ struct ContentView: View {
             }
             .animation(.easeInOut(duration: 0.18), value: iCloudService.isAuthenticated)
             .animation(.easeInOut(duration: 0.18), value: showingAuth)
+            .animation(.easeInOut(duration: 0.18), value: showingSettings)
             .animation(.easeInOut(duration: 0.18), value: generatedEmail)
         }
         .frame(width: showingAuth ? 480 : 320)
@@ -84,6 +88,14 @@ struct ContentView: View {
                 .buttonStyle(.plain)
                 .help("Disconnect iCloud")
             }
+
+            Button(action: { showingSettings.toggle() }) {
+                Image(systemName: "gearshape")
+                    .font(.system(size: 11))
+                    .foregroundStyle(showingSettings ? .primary : .secondary)
+            }
+            .buttonStyle(.plain)
+            .help("Settings")
 
             Button(action: {
                 NSApplication.shared.terminate(nil)
@@ -177,6 +189,8 @@ struct ContentView: View {
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
+                .lineLimit(nil)
         }
         .padding(16)
     }
