@@ -46,6 +46,12 @@ struct ContentView: View {
             .animation(.easeInOut(duration: 0.18), value: showingAuth)
             .animation(.easeInOut(duration: 0.18), value: showingSettings)
             .animation(.easeInOut(duration: 0.18), value: generatedEmail)
+
+            // Footer version badge - shown across all sub-views
+            if !showingSettings && !showingAuth {
+                Divider()
+                versionFooter
+            }
         }
         .frame(width: showingAuth ? 480 : 320)
         .background(Color(NSColor.windowBackgroundColor))
@@ -55,6 +61,31 @@ struct ContentView: View {
                 _ = try? await iCloudService.validateSession()
             }
         }
+    }
+
+    // MARK: - Version Footer
+
+    private var versionFooter: some View {
+        HStack(spacing: 4) {
+            Spacer()
+            Text("BurnerMail")
+                .font(.system(size: 10, weight: .medium))
+                .foregroundStyle(.tertiary)
+            Text("v\(appVersion)")
+                .font(.system(size: 10, design: .monospaced))
+                .foregroundStyle(.tertiary)
+            Spacer()
+        }
+        .padding(.vertical, 6)
+    }
+
+    private var appVersion: String {
+        let short = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? ""
+        if !build.isEmpty && build != short {
+            return "\(short) (\(build))"
+        }
+        return short
     }
 
     // MARK: - Header
