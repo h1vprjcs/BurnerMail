@@ -10,7 +10,7 @@
 set -e
 
 APP_NAME="BurnerMail"
-VERSION="1.0.1"
+VERSION="1.0.2"
 DMG_NAME="${APP_NAME}-${VERSION}"
 PROJECT="BurnerMail.xcodeproj"
 SCHEME="BurnerMail"

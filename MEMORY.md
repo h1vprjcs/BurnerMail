@@ -4,6 +4,23 @@ A running history of every release: what changed, why, and the corresponding Git
 
 ---
 
+## v1.0.2 — 2026-05-22
+
+**Improvements**
+- **Real BurnerMail logo in the popover header.** Replaced the SF Symbol `envelope.badge.shield.half.filled` with the actual AppIcon asset (envelope + shield in BurnerMail blue) so the header matches the menu-bar / dock icon. Falls back to the SF Symbol if the asset can't be loaded.
+- **Removed misleading "Saved to Apple Passwords" banner and "Add to Passwords" button.** Since 1.0.1 disabled App Sandbox and removed `keychain-access-groups`, saves go to the local Keychain (not iCloud Keychain), and the items don't show up in the Apple Passwords app on every user's setup. The result view now shows a generic "Burner account ready" banner and a "Copy and paste into the site" hint. Credentials still land in the clipboard the moment the user hits Copy.
+- Generate-screen helper text updated to match: "Creates a Hide My Email address + strong password and copies them so you can paste straight into the signup form."
+
+**Build / packaging changes**
+- Version bumped: `MARKETING_VERSION 1.0.1 → 1.0.2`, `CURRENT_PROJECT_VERSION 2 → 3`.
+
+**Artifacts**
+- GitHub release: https://github.com/h1vprjcs/BurnerMail/releases/tag/v1.0.2
+- DMG: `BurnerMail-1.0.2.dmg`
+- Discord embed: posted to the BurnerMail releases webhook.
+
+---
+
 ## v1.0.1 — 2026-05-22
 
 **Fixes**

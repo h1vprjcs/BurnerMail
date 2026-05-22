@@ -19,7 +19,7 @@ The email forwards to your real inbox. The website never knows who you are.
 
 ## Install (no Xcode needed)
 
-1. Download **BurnerMail-1.0.1.dmg** from [Releases](../../releases)
+1. Download **BurnerMail-1.0.2.dmg** from [Releases](../../releases)
 2. Open the DMG and drag BurnerMail into Applications
 3. **First launch:** right-click BurnerMail > **Open** (macOS security prompt — only needed once)
 4. Click the ✉️ icon in your menu bar
@@ -50,9 +50,13 @@ To build a distributable DMG:
 ```bash
 ./package-dmg.sh --team YOUR_TEAM_ID
 ```
-The DMG will be at `dist/BurnerMail-1.0.1.dmg`.
+The DMG will be at `dist/BurnerMail-1.0.2.dmg`.
 
 ## Changelog
+
+### v1.0.2
+- Replaced the popover header icon with the real BurnerMail logo.
+- Removed the misleading "Saved to Apple Passwords" banner and "Add to Passwords" button. Credentials are saved to your local Keychain and copied to the clipboard so you can paste them straight into the signup form.
 
 ### v1.0.1
 - Fixed Keychain error -34018 ("required entitlement isn't present") that blocked password saves on ad-hoc signed builds. The app now tries iCloud Keychain sync first and falls back to the local Keychain when the sync entitlement isn't available, so the password is always saved.

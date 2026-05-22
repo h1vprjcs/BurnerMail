@@ -63,6 +63,25 @@ struct ContentView: View {
         }
     }
 
+    // MARK: - Brand Logo
+
+    /// The BurnerMail logo (envelope + shield, BurnerMail blue). Falls back
+    /// to an SF Symbol if the asset can't be loaded for any reason.
+    @ViewBuilder
+    private var brandLogo: some View {
+        if let icon = NSImage(named: NSImage.Name("AppIcon"))
+            ?? NSImage(named: "AppIcon")
+            ?? NSApp?.applicationIconImage {
+            Image(nsImage: icon)
+                .resizable()
+                .interpolation(.high)
+                .aspectRatio(contentMode: .fit)
+        } else {
+            Image(systemName: "envelope.badge.shield.half.filled")
+                .foregroundStyle(.blue)
+        }
+    }
+
     // MARK: - Version Footer
 
     private var versionFooter: some View {
@@ -92,9 +111,8 @@ struct ContentView: View {
 
     var headerBar: some View {
         HStack(spacing: 8) {
-            Image(systemName: "envelope.badge.shield.half.filled")
-                .foregroundStyle(.blue)
-                .font(.system(size: 15, weight: .medium))
+            brandLogo
+                .frame(width: 18, height: 18)
             Text("BurnerMail")
                 .font(.system(size: 14, weight: .semibold))
 
@@ -216,7 +234,7 @@ struct ContentView: View {
             .controlSize(.large)
             .disabled(isGenerating)
 
-            Text("Creates a Hide My Email address + strong password, then saves both to Apple Passwords.")
+            Text("Creates a Hide My Email address + strong password and copies them so you can paste straight into the signup form.")
                 .font(.caption2)
                 .foregroundStyle(.tertiary)
                 .multilineTextAlignment(.center)
@@ -234,7 +252,7 @@ struct ContentView: View {
             HStack(spacing: 6) {
                 Image(systemName: "checkmark.circle.fill")
                     .foregroundStyle(.green)
-                Text("Saved to Apple Passwords")
+                Text("Burner account ready")
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(.green)
             }
@@ -278,12 +296,9 @@ struct ContentView: View {
 
                 Spacer()
 
-                Button(action: openPasswordsApp) {
-                    Label("Add to Passwords", systemImage: "plus.rectangle.on.folder")
-                        .font(.caption)
-                }
-                .buttonStyle(.plain)
-                .foregroundStyle(.secondary)
+                Text("Copy and paste into the site")
+                    .font(.caption2)
+                    .foregroundStyle(.tertiary)
             }
             .padding(.bottom, 4)
         }
@@ -453,14 +468,5 @@ struct ContentView: View {
     func copyToClipboard(_ text: String) {
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)
-    }
-
-    func openPasswordsApp() {
-        // Copy the password to clipboard first so the user can paste it in
-        if let pass = generatedPassword {
-            copyToClipboard(pass)
-        }
-        // Open Passwords.app - click "+" there and paste the password
-        NSWorkspace.shared.open(URL(fileURLWithPath: "/System/Applications/Passwords.app"))
     }
 }
